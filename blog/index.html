@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1">
+    <base href="/">
+    <title>Victory Health</title>
+
+    <link rel="icon" href="favicon.ico" type="image/x-icon"/>
+    <link rel='shortcut icon' type='image/x-icon' href='favicon.ico'>
+    <link rel="stylesheet" href="src/css/styles.css">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  </head>
+  <body>
+    <header>
+      <nav>
+        <material-dropdown>
+          <i class="material-icons" slot="icon" tabindex="1">menu</i>
+          <li slot="option"><a href="/">Home</a></li>
+          <li slot="option"><a href="/page_one">Page One</a></li>
+          <li slot="option"><a href="/page_two">Page Two</a></li>
+          <li slot="option"><a href="/blog">Blog</a></li>
+        </material-dropdown>
+        <ul>
+          <li><a href="/">Home</a></li>
+          <li><a href="/page_one">Page One</a></li>
+          <li><a href="/page_two">Page Two</a></li>
+          <li><a href="/blog">Blog</a></li>
+        </ul>
+      </nav>
+    </header>
+
+    <main>
+      <section id="content">
+        <h2>Blog</h2>
+
+        <p>Loading postings...</p>
+      </section>
+    </main>
+
+    <footer></footer>
+
+    <script>
+      (async () => {
+        const apiUrl = 'https://3jrnxopv87.execute-api.us-east-1.amazonaws.com/production/blogpostings/writer/danny';
+        const compile = data => `${data.map(({title, intro, body}) => `<article>${title} ${intro} ${body}</article>`).join('')}`;
+        const data = await (await fetch(apiUrl)).json();
+        const html = compile(data);
+
+        const outlet = document.querySelector('#content');
+        outlet.querySelector('p').remove();
+
+        outlet.insertAdjacentHTML('beforeend', html);
+      })();
+    </script>
+
+    <script type="module" src="src/js/index.js"></script>
+  </body>
+</html>
