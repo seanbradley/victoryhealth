@@ -16,7 +16,7 @@ However, please note, the Victory Health Tech logo, all original artwork, and or
 
 ## ACKNOWLEDGEMENTS
 
-Special thanks to Danny Moerkerke for sharing his insights on optimizing PWA design, and intercepting and streaming requests / responses via a service worker script.
+Special thanks to Danny Moerkerke for sharing his insights on optimizing PWA design, and intercepting and streaming requests / responses via a service worker script.  Once activated, A Service Worker caches all assets of the app locally and then serves these assets from the cache, or can even enable serving API responses and BLOBs from IndexedDB--i.e., the browser's own native database. Through the Streams API, the various templates comprisinig parts of a page within the app are sent to the browser.
 
 
 ------------------------------------------------------------------------

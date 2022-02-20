@@ -1,0 +1,389 @@
+openapi: 3.0.1
+info:
+  title: VMT API
+  description: Victory Med Tech API
+  version: "1.0"
+servers:
+- url: /
+paths:
+  /:
+    get:
+      tags:
+      - root
+      description: VMT API.
+      responses:
+        200:
+          description: Successful operation
+          headers:
+            Content-Type:
+              description: Media type of request
+              schema:
+                type: string
+          content: {}
+      x-amazon-apigateway-integration:
+        responses:
+          default:
+            statusCode: "200"
+            responseParameters:
+              method.response.header.Content-Type: '''text/html'''
+            responseTemplates:
+              text/html: -
+                <html>
+                    <head>
+                        <style>
+                        body {
+                            color: #333;
+                            font-family: Sans-serif;
+                            max-width: 800px;
+                            margin: auto;
+                        }
+                        </style>
+                    </head>
+                    <body>
+                        <h1>Welcome to the Victory Med Tech API</h1>
+                        <p>
+                 The API contains the <code>/posts</code> and <code>/posts/{postId}</code> resources. By making a <a href="/$context.stage/posts/" target="_blank"><code>GET</code> request</a> to <code>/posts</code> you can retrieve a list of blog posts in your API. If you are looking for a specific post, for example the post with ID 1, you can make a <a href="/$context.stage/posts/1" target="_blank"><code>GET</code> request</a> to <code>/posts/1</code>.
+                        </p>
+                        <p>
+                            You can use a REST client such as <a href="https://www.getpostman.com/" target="_blank">Postman</a> to test the <code>POST</code> methods in your API to create a new post. Use the sample body below to send the <code>POST</code> request:
+                        </p>
+                        <pre>
+                {
+                    "title" : "Awesome!",
+                    "date" : "01-01-2020"
+                }
+                        </pre>
+                    </body>
+                </html>
+        passthroughBehavior: when_no_match
+        requestTemplates:
+          application/json: '{"statusCode": 200}'
+        type: mock
+  /posts:
+    get:
+      tags:
+      - posts
+      summary: List all blog posts.
+      parameters:
+      - name: title
+        in: query
+        description: The title of the post to retrieve
+        schema:
+          type: string
+      - name: page
+        in: query
+        description: Page number of results to return.
+        schema:
+          type: string
+      responses:
+        200:
+          description: Successful operation
+          headers:
+            Access-Control-Allow-Origin:
+              description: URI that may access the resource
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/posts'
+      x-amazon-apigateway-integration:
+        responses:
+          default:
+            statusCode: "200"
+            responseParameters:
+              method.response.header.Access-Control-Allow-Origin: '''*'''
+        requestParameters:
+          integration.request.querystring.page: method.request.querystring.page
+          integration.request.querystring.type: method.request.querystring.title
+        uri: http://vmt-api.execute-api.us-east-1.amazonaws.com/v1/posts
+        passthroughBehavior: when_no_match
+        httpMethod: GET
+        type: http
+    post:
+      tags:
+      - posts
+      summary: Create a post.
+      operationId: CreatePost
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/NewPost'
+        required: true
+      responses:
+        200:
+          description: Successful operation
+          headers:
+            Access-Control-Allow-Origin:
+              description: URI that may access the resource
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NewPostResponse'
+      x-amazon-apigateway-integration:
+        responses:
+          default:
+            statusCode: "200"
+            responseParameters:
+              method.response.header.Access-Control-Allow-Origin: '''*'''
+        uri: http://vmt-api.execute-api.us-east-1.amazonaws.com/v1/posts/
+        passthroughBehavior: when_no_match
+        httpMethod: POST
+        type: http
+      x-codegen-request-body-name: NewPost
+    options:
+      responses:
+        200:
+          description: Successful operation
+          headers:
+            Access-Control-Allow-Origin:
+              description: URI that may access the resource
+              schema:
+                type: string
+            Access-Control-Allow-Methods:
+              description: Method or methods allowed when accessing the resource
+              schema:
+                type: string
+            Access-Control-Allow-Headers:
+              description: Used in response to a preflight request to indicate which
+                HTTP headers can be used when making the request.
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Empty'
+      x-amazon-apigateway-integration:
+        responses:
+          default:
+            statusCode: "200"
+            responseParameters:
+              method.response.header.Access-Control-Allow-Methods: '''POST,GET,OPTIONS'''
+              method.response.header.Access-Control-Allow-Headers: '''Content-Type,X-Amz-Date,Authorization,X-Api-Key'''
+              method.response.header.Access-Control-Allow-Origin: '''*'''
+        passthroughBehavior: when_no_match
+        requestTemplates:
+          application/json: '{"statusCode": 200}'
+        type: mock
+  /posts/{postId}:
+    get:
+      tags:
+      - posts
+      summary: Fetch a specific post by ID.
+      operationId: GetPost
+      parameters:
+      - name: postId
+        in: path
+        description: The id of the post to retrieve
+        required: true
+        schema:
+          type: string
+      responses:
+        200:
+          description: Successful operation
+          headers:
+            Access-Control-Allow-Origin:
+              description: URI that may access the resource
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Post'
+      x-amazon-apigateway-integration:
+        responses:
+          default:
+            statusCode: "200"
+            responseParameters:
+              method.response.header.Access-Control-Allow-Origin: '''*'''
+        requestParameters:
+          integration.request.path.petId: method.request.path.postId
+        uri: http://vmt-api.execute-api.us-east-1.amazonaws.com/v1/posts/{postId}
+        passthroughBehavior: when_no_match
+        httpMethod: GET
+        type: http
+    options:
+      parameters:
+      - name: postId
+        in: path
+        description: The id of the post to retrieve
+        required: true
+        schema:
+          type: string
+      responses:
+        200:
+          description: Successful operation
+          headers:
+            Access-Control-Allow-Origin:
+              description: URI that may access the resource
+              schema:
+                type: string
+            Access-Control-Allow-Methods:
+              description: Method or methods allowed when accessing the resource
+              schema:
+                type: string
+            Access-Control-Allow-Headers:
+              description: Used in response to a preflight request to indicate which
+                HTTP headers can be used when making the request.
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Empty'
+      x-amazon-apigateway-integration:
+        responses:
+          default:
+            statusCode: "200"
+            responseParameters:
+              method.response.header.Access-Control-Allow-Methods: '''GET,OPTIONS'''
+              method.response.header.Access-Control-Allow-Headers: '''Content-Type,X-Amz-Date,Authorization,X-Api-Key'''
+              method.response.header.Access-Control-Allow-Origin: '''*'''
+        passthroughBehavior: when_no_match
+        requestTemplates:
+          application/json: '{"statusCode": 200}'
+        type: mock
+components:
+  schemas:
+    posts:
+      type: array
+      items:
+        $ref: '#/components/schemas/Post'
+    Empty:
+      type: object
+    NewPostResponse:
+      type: object
+      properties:
+        pet:
+          $ref: '#/components/schemas/Post'
+        message:
+          type: string
+    Post:
+      type: object
+      properties:
+        id:
+          type: integer
+        title:
+          type: string
+        date:
+          type: string
+    NewPost:
+      type: object
+      properties:
+        title:
+          $ref: '#/components/schemas/PostTitle'
+        date:
+          type: string
+    PostTitle:
+      type: string
+      enum:
+      - Awesome!
+      - Wow!
+      - Whoa!
+      - Cool!
+      - Dayum!
+x-amazon-apigateway-documentation:
+  version: v2.1
+  createdDate: 2016-11-17T07:03:59Z
+  documentationParts:
+  - location:
+      type: API
+    properties:
+      info:
+        description: VMT API on Amazon API Gateway.
+  - location:
+      type: METHOD
+      method: GET
+    properties:
+      tags:
+      - posts
+      description: Blog post HTML web page containing API usage information
+  - location:
+      type: METHOD
+      path: /posts/{postId}
+      method: GET
+    properties:
+      tags:
+      - posts
+      summary: Info for a specific post
+  - location:
+      type: METHOD
+      path: /posts
+      method: GET
+    properties:
+      tags:
+      - posts
+      summary: List all posts
+  - location:
+      type: METHOD
+      path: /posts
+      method: POST
+    properties:
+      tags:
+      - posts
+      summary: Create a post
+  - location:
+      type: PATH_PARAMETER
+      path: /posts/{postId}
+      method: '*'
+      name: postId
+    properties:
+      description: The id of the post to retrieve
+  - location:
+      type: QUERY_PARAMETER
+      path: /posts
+      method: GET
+      name: page
+    properties:
+      description: Page number of results to return.
+  - location:
+      type: QUERY_PARAMETER
+      path: /posts
+      method: GET
+      name: title
+    properties:
+      description: The title of the post to retrieve
+  - location:
+      type: REQUEST_BODY
+      path: /posts
+      method: POST
+    properties:
+      description: A post object that needs to be added to the blog
+  - location:
+      type: RESPONSE
+      method: '*'
+      statusCode: "200"
+    properties:
+      description: Successful operation
+  - location:
+      type: RESPONSE_HEADER
+      method: OPTIONS
+      statusCode: "200"
+      name: Access-Control-Allow-Headers
+    properties:
+      description: Used in response to a preflight request to indicate which HTTP
+        headers can be used when making the request.
+  - location:
+      type: RESPONSE_HEADER
+      method: OPTIONS
+      statusCode: "200"
+      name: Access-Control-Allow-Methods
+    properties:
+      description: Method or methods allowed when accessing the resource
+  - location:
+      type: RESPONSE_HEADER
+      method: '*'
+      statusCode: "200"
+      name: Access-Control-Allow-Origin
+    properties:
+      description: URI that may access the resource
+  - location:
+      type: RESPONSE_HEADER
+      method: GET
+      statusCode: "200"
+      name: Content-Type
+    properties:
+      description: Media type of request
